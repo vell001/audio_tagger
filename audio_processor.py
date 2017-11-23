@@ -63,19 +63,24 @@ def load_train_data(audio_manifest_path, tags):
             tmp = line.split("  ")
             if not tmp or len(tmp) != 2:
                 continue
-            audio_path = os.path.join(os.path.dirname(audio_manifest_path), tmp[0])
+            audio_path = os.path.join(os.path.dirname(audio_manifest_path), tmp[0].strip())
+            if not os.path.exists(audio_path):
+                continue
 
-            tag = tags.index(tmp[1])
+            tag = tags.index(tmp[1].strip())
             if tag < 0:
                 continue
             audio_path_tag.append((audio_path, tag))
+    return audio_to_melgram_dataset(audio_path_tag)
 
 
 if __name__ == "__main__":
     # print(compute_melgram("data/Z999@1050615.wav"))
-    audio_to_melgram_dataset([
-        ("data/Z999@1050615.wav", 1),
-        ("data/Z999@1050615.wav", 1),
-        ("data/Z999@1050615.wav", 1),
-        ("data/Z999@1050615.wav", 1),
-    ])
+    # audio_to_melgram_dataset([
+    #     ("data/Z999@1050615.wav", 1),
+    #     ("data/Z999@1050615.wav", 1),
+    #     ("data/Z999@1050615.wav", 1),
+    #     ("data/Z999@1050615.wav", 1),
+    # ])
+    tags = ['c','m','f']
+    load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/accurate_test_data",tags)
