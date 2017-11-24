@@ -25,7 +25,7 @@ from keras import backend as K
 K.set_image_dim_ordering('th')
 
 
-def MusicTaggerCNN(weights='msd', input_tensor=None,
+def AudioTaggerCNN(weights='msd', input_tensor=None,
                    include_top=True):
     '''Instantiate the MusicTaggerCNN architecture,
     optionally loading weights pre-trained
@@ -122,7 +122,7 @@ def MusicTaggerCNN(weights='msd', input_tensor=None,
     # Output
     x = Flatten()(x)
     if include_top:
-        x = Dense(50, activation='sigmoid', name='output')(x)
+        x = Dense(3, activation='sigmoid', name='output')(x)
 
     # Create model
     model = Model(melgram_input, x)

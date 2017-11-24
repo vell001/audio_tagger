@@ -1,6 +1,7 @@
 import codecs
 
 import h5py
+import keras
 import librosa
 import numpy as np
 import os
@@ -44,11 +45,12 @@ def compute_melgram(audio_path):
 
 def audio_to_melgram_dataset(audio_path_tag):
     x = np.zeros((0, 1, 96, 1366))
-    y = list()
+    y = np.zeros((0, 3))
     for audio_path, tag in audio_path_tag:
         melgram = compute_melgram(audio_path)
         x = np.concatenate((x, melgram), axis=0)
-        y.append(tag)
+        tag_cat = keras.utils.to_categorical(tag, 3)
+        y = np.concatenate((y, tag_cat), axis=0)
 
     y = np.array(y)
     return x, y
@@ -82,5 +84,5 @@ if __name__ == "__main__":
     #     ("data/Z999@1050615.wav", 1),
     #     ("data/Z999@1050615.wav", 1),
     # ])
-    tags = ['c','m','f']
-    load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/accurate_test_data",tags)
+    tags = ['c', 'm', 'f']
+    load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/accurate_test_data", tags)
