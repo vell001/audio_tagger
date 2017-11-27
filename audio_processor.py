@@ -50,7 +50,7 @@ def audio_to_melgram_dataset(audio_path_tag):
         melgram = compute_melgram(audio_path)
         x = np.concatenate((x, melgram), axis=0)
         tag_cat = keras.utils.to_categorical(tag, 3)
-        y = np.concatenate((y, tag_cat), axis=0)
+        y = np.concatenate((y, tag_cat[np.newaxis, :]), axis=0)
 
     y = np.array(y)
     return x, y
@@ -76,6 +76,20 @@ def load_train_data(audio_manifest_path, tags):
     return audio_to_melgram_dataset(audio_path_tag)
 
 
+def save_xy(x, y, save_path):
+    h5f = h5py.File(save_path, "w")
+    h5f.create_dataset("x", data=x)
+    h5f.create_dataset("y", data=y)
+    h5f.close()
+
+
+def load_xy(save_path):
+    h5f = h5py.File(save_path, "r")
+    x = h5f["x"][:]
+    y = h5f["y"][:]
+    return x, y
+
+
 if __name__ == "__main__":
     # print(compute_melgram("data/Z999@1050615.wav"))
     # audio_to_melgram_dataset([
@@ -85,4 +99,7 @@ if __name__ == "__main__":
     #     ("data/Z999@1050615.wav", 1),
     # ])
     tags = ['c', 'm', 'f']
-    load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/accurate_test_data", tags)
+    x, y = load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/accurate_test_data", tags)
+    save_xy(x, y, "data/audio_tagger_accurate_test_data.hdf5")
+    x, y = load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/accurate_train_data", tags)
+    save_xy(x, y, "data/audio_tagger_accurate_train_data.hdf5")
