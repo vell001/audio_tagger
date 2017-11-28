@@ -25,7 +25,7 @@ from keras import backend as K
 K.set_image_dim_ordering('th')
 
 
-def AudioTaggerCNN(weights='msd', input_tensor=None,
+def AudioTaggerCNN(weights_path=None, input_tensor=None,
                    include_top=True):
     '''Instantiate the MusicTaggerCNN architecture,
     optionally loading weights pre-trained
@@ -45,8 +45,8 @@ def AudioTaggerCNN(weights='msd', input_tensor=None,
     to use it.
 
     # Arguments
-        weights: one of `None` (random initialization)
-            or "msd" (pre-training on ImageNet).
+        weights_path: one of `None` (random initialization)
+            or "weights_path" (pre-training model weights).
         input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
             to use as image input for the model.
         include_top: whether to include the 1 fully-connected
@@ -57,10 +57,6 @@ def AudioTaggerCNN(weights='msd', input_tensor=None,
     # Returns
         A Keras model instance.
     '''
-    if weights not in {'msd', None}:
-        raise ValueError('The `weights` argument should be either '
-                         '`None` (random initialization) or `msd` '
-                         '(pre-training on Million Song Dataset).')
 
     # Determine proper input shape
     if K.image_dim_ordering() == 'th':
@@ -126,13 +122,8 @@ def AudioTaggerCNN(weights='msd', input_tensor=None,
 
     # Create model
     model = Model(melgram_input, x)
-    if weights is None:
+    if weights_path is None:
         return model
     else:
-        # Load input
-        if K.image_dim_ordering() == 'tf':
-            raise RuntimeError("Please set image_dim_ordering == 'th'."
-                               "You can set it at ~/.keras/keras.json")
-        model.load_weights('data/music_tagger_cnn_weights_%s.h5' % K._BACKEND,
-                           by_name=True)
+        model.load_weights(weights_path, by_name=True)
         return model

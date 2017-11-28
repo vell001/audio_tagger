@@ -6,6 +6,7 @@ import librosa
 import numpy as np
 import os
 
+tags = ['c', 'm', 'f']
 
 def compute_melgram(audio_path):
     ''' Compute a mel-spectrogram and returns it in a shape of (1,1,96,1366), where
@@ -43,6 +44,14 @@ def compute_melgram(audio_path):
     return ret
 
 
+def audios_to_x(audio_paths):
+    x = np.zeros((0, 1, 96, 1366))
+    for audio_path in audio_paths:
+        melgram = compute_melgram(audio_path)
+        x = np.concatenate((x, melgram), axis=0)
+    return x
+
+
 def audio_to_melgram_dataset(audio_path_tag):
     x = np.zeros((0, 1, 96, 1366))
     y = np.zeros((0, 3))
@@ -67,6 +76,7 @@ def load_train_data(audio_manifest_path, tags):
                 continue
             audio_path = os.path.join(os.path.dirname(audio_manifest_path), tmp[0].strip())
             if not os.path.exists(audio_path):
+                print("文件不存在", audio_path)
                 continue
 
             tag = tags.index(tmp[1].strip())
@@ -100,6 +110,10 @@ if __name__ == "__main__":
     # ])
     tags = ['c', 'm', 'f']
     x, y = load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/accurate_test_data", tags)
-    save_xy(x, y, "data/audio_tagger_accurate_test_data.hdf5")
+    save_xy(x, y, "dataset/audio_tagger_accurate_test_data.hdf5")
     x, y = load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/accurate_train_data", tags)
-    save_xy(x, y, "data/audio_tagger_accurate_train_data.hdf5")
+    save_xy(x, y, "dataset/audio_tagger_accurate_train_data.hdf5")
+    # x, y = load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/test_data", tags)
+    # save_xy(x, y, "dataset/audio_tagger_test_data.hdf5")
+    # x, y = load_train_data("/home/vell/workspace/audio_tagger_data/性别分类/train_data", tags)
+    # save_xy(x, y, "dataset/audio_tagger_train_data.hdf5")
